@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Testanrufe</h1>
+<div class="card scroll">
+{% if tests %}<table><tr><th>Zeit</th><th>Standort</th><th>Leitung</th><th>Netz</th><th>Ergebnis</th><th>Grund</th><th>SIP</th></tr>
+{% for t in tests %}<tr><td>{{ t.time|lt('%d.%m. %H:%M:%S') }}</td><td><a href="/admin/sites/{{ t.site_id }}">{{ t.site_id }}</a></td><td>{{ t.line_label }}</td><td>{{ t.network }}</td>
+<td><span class="{{ res_css(t.result) }}">{{ CLASSES[t.result] }}</span></td><td class="muted">{{ t.reason or '' }}</td><td>{{ t.sip_code or '' }}</td></tr>{% endfor %}
+</table>{% else %}<p class="muted">Noch keine Tests.</p>{% endif %}
+</div>
+<div class="card scroll"><h2>Anrufe ohne angekündigten Test</h2>
+<p class="muted">Bei der Terminierung angekommen, aber keinem Test zuzuordnen – z. B. eine Umleitung für eine falsche Nummer.</p>
+{% if unmatched %}<table><tr><th>Zeit</th><th>Rufnummer</th><th>Quelle</th><th>Gewählt</th></tr>
+{% for c in unmatched %}<tr><td>{{ c.time|lt('%d.%m. %H:%M:%S') }}</td><td>{{ (c.cli or [])|join(', ') }}</td><td>{{ c.src }}</td><td class="muted">{{ c.dialed }}</td></tr>{% endfor %}
+</table>{% else %}<p class="muted">keine</p>{% endif %}
+</div>
+{% endblock %}

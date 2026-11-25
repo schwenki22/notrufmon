@@ -1,0 +1,31 @@
+# HTTPS front end with your own certificate (deploy/server/certs/fullchain.pem + privkey.pem).
+# After replacing the files: docker compose up -d --force-recreate caddy
+
+(webauth) {
+	basic_auth {
+		{$WEB_USER} {$WEB_PASSWORD_HASH}
+	}
+}
+
+{$NOTRUFMON_DOMAIN} {
+	tls /certs/fullchain.pem /certs/privkey.pem
+	encode gzip
+
+	# probes: token protected, no password prompt
+	handle /api/v1/probe/* {
+		reverse_proxy 127.0.0.1:8080
+	}
+	handle /healthz {
+		reverse_proxy 127.0.0.1:8080
+	}
+	handle /admin* {
+		import webauth
+		reverse_proxy 127.0.0.1:8080 {
+			header_up -Authorization
+		}
+	}
+	handle {
+		import webauth
+		redir * /admin/
+	}
+}

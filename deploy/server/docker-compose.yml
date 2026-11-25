@@ -1,0 +1,54 @@
+# notrufmon central server.  Usage:
+#   cp .env.example .env && cp config.example.yaml config.yaml   (edit both)
+#   sudo chgrp 991 config.yaml && chmod 640 config.yaml
+#   docker compose up -d --build
+# Host networking: the termination needs real UDP ports for SIP/RTP (no Docker NAT).
+name: notrufmon
+
+services:
+  db:
+    image: postgres:16.6
+    network_mode: host
+    restart: unless-stopped
+    command: ["postgres", "-c", "listen_addresses=127.0.0.1", "-c", "port=5433"]
+    environment:
+      POSTGRES_DB: notrufmon
+      POSTGRES_USER: notrufmon
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5433 -U notrufmon"]
+      interval: 10s
+      retries: 10
+
+  app:
+    # probe API + termination of the redirected test calls (SIP trunk) + web UI
+    build: {context: ../.., dockerfile: deploy/server/Dockerfile}
+    image: notrufmon-server:latest
+    network_mode: host
+    restart: unless-stopped
+    depends_on: {db: {condition: service_healthy}}
+    environment:
+      TZ: ${TZ:-Europe/Luxembourg}
+      NOTRUFMON_CONFIG: /etc/notrufmon/config.yaml
+      NOTRUFMON_DSN: postgresql://notrufmon:${DB_PASSWORD}@127.0.0.1:5433/notrufmon
+    volumes:
+      - ./config.yaml:/etc/notrufmon/config.yaml:ro
+
+  caddy:
+    image: caddy:2.8.4
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      NOTRUFMON_DOMAIN: ${NOTRUFMON_DOMAIN:?set NOTRUFMON_DOMAIN in .env}
+      WEB_USER: ${WEB_USER:?set WEB_USER in .env}
+      WEB_PASSWORD_HASH: ${WEB_PASSWORD_HASH:?set WEB_PASSWORD_HASH in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./certs:/certs:ro          # own certificate: fullchain.pem + privkey.pem
+      - caddy-data:/data
+
+volumes:
+  db-data:
+  caddy-data:

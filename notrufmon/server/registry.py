@@ -31,6 +31,7 @@ class Registry:
     def announce(self, line: dict, test_id: str | None = None) -> dict:
         now = self.clock()
         t = {"id": test_id or str(uuid.uuid4()), "line_id": line["id"], "expected_cli": line["cli"],
+             "site_id": line.get("site_id"), "line": line,
              "want": normalize_number(line["cli"], self.cc), "announced_at": now,
              "window_end": now + self.window_s, "deadline": now + self.window_s + self.grace_s,
              "probe": None, "call_in": None, "call_running": False, "result": None}

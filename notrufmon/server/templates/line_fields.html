@@ -1,0 +1,20 @@
+<div class="grid">
+  <div><label for="label">Bezeichnung</label><input type="text" id="label" name="label" value="{{ line.label or '' }}" placeholder="z. B. POST Mobil" required></div>
+  <div><label for="kind">Art</label><select id="kind" name="kind">
+    <option value="mobile" {% if line.kind == 'mobile' %}selected{% endif %}>Mobilfunk (über LTE-Gateway)</option>
+    <option value="voip" {% if line.kind == 'voip' %}selected{% endif %}>VoIP-Festnetz</option></select></div>
+  <div><label for="network">Netz / Anbieter</label><input type="text" id="network" name="network" value="{{ line.network or '' }}" placeholder="POST, Orange, Tango oder VoIP-Anbieter"></div>
+  <div><label for="cli">Testrufnummer</label><input type="text" id="cli" name="cli" value="{{ line.cli or '' }}" placeholder="+352 …" required>
+    <div class="muted">Diese Nummer muss bei der Leitstelle ankommen (und dort für die Umleitung hinterlegt sein)</div></div>
+  <div><label for="target">Gewählte Nummer</label><input type="text" id="target" name="target" value="{{ line.target or '112' }}"></div>
+  <div><label for="sip_domain">SIP-Server</label><input type="text" id="sip_domain" name="sip_domain" value="{{ line.sip_domain or '' }}" required>
+    <div class="muted">VoIP: Server des Anbieters · Mobilfunk: IP-Adresse des Gateways</div></div>
+  <div><label for="sip_port">SIP-Port</label><input type="number" id="sip_port" name="sip_port" value="{{ line.sip_port or 5060 }}"></div>
+  <div><label for="sip_proxy">Proxy</label><input type="text" id="sip_proxy" name="sip_proxy" value="{{ line.sip_proxy or '' }}" placeholder="leer = SIP-Server"></div>
+  <div><label for="username">SIP-Benutzer</label><input type="text" id="username" name="username" value="{{ line.username or '' }}" required></div>
+  <div><label for="password">SIP-Passwort</label><input type="password" id="password" name="password" autocomplete="new-password" placeholder="{% if line.id %}leer lassen = unverändert{% endif %}"></div>
+  <div><label for="auth_username">Registrierungsname</label><input type="text" id="auth_username" name="auth_username" value="{{ line.auth_username or '' }}" placeholder="nur wenn abweichend"></div>
+  <div><label>Optionen</label>
+    <label style="font-weight:normal"><input type="checkbox" name="register" value="1" {% if line.register %}checked{% endif %}> registrieren (aus = Gateway/Trunk ohne REGISTER)</label>
+    <label style="font-weight:normal"><input type="checkbox" name="enabled" value="1" {% if line.enabled %}checked{% endif %}> aktiv</label></div>
+</div>

@@ -1,0 +1,28 @@
+[Unit]
+Description=notrufmon probe (112 availability test calls)
+Wants=network-online.target time-sync.target
+After=network-online.target time-sync.target
+
+[Service]
+Type=simple
+User=notrufmon
+Group=notrufmon
+Environment=PYTHONPATH=/opt/notrufmon PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 -m notrufmon.probe --config /etc/notrufmon/probe.toml
+WorkingDirectory=/opt/notrufmon
+StateDirectory=notrufmon
+Restart=always
+RestartSec=5
+Nice=-5
+# stop: the running 112 test call ends with a regular BYE (max. call length + 15 s)
+TimeoutStopSec=45
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Neuer Standort</h1>
+<form method="post" action="/admin/sites/new"><div class="card"><div class="grid">
+  <div><label for="id">Standort-ID</label><input type="text" id="id" name="id" value="{{ row.id or '' }}" placeholder="z. B. ettelbruck" required>
+    <div class="muted">Kleinbuchstaben, Ziffern, - und _ – erscheint in Auswertungen</div></div>
+  <div><label for="name">Name</label><input type="text" id="name" name="name" value="{{ row.name or '' }}" placeholder="z. B. Ettelbruck, Feuerwache" required></div>
+  <div><label for="region">Region</label><input type="text" id="region" name="region" value="{{ row.region or '' }}" placeholder="z. B. Nord"></div>
+</div></div>
+<div class="card actions"><button type="submit">Anlegen und Token erzeugen</button></div></form>
+{% endblock %}

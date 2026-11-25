@@ -15,12 +15,17 @@ Basis ist der SIP/RTP-Kern von voipmon (reine Python-Standardbibliothek).
 | SIP-UA, RTP/RTCP (aus voipmon) | übernommen |
 | Tonprüfung, die Mobilfunk-Umkodierung übersteht (`notrufmon/tones.py`) | fertig, getestet |
 | Terminierung als SIP-Trunk, Zuordnung, Ergebnisklassen (`notrufmon/server/`) | fertig, lokal Ende zu Ende getestet |
-| Probe-Ablauf (SIP-Leitungen) | geplant |
+| Probe-Ablauf (SIP-Leitungen, Ankündigung, Zwischenspeicher) | fertig, Ende zu Ende getestet |
 | Anbindung Yeastar TG200/TG400 | wenn Gerät verfügbar |
-| Datenbank, Weboberfläche, Alarmierung, Berichte | aus voipmon zu übernehmen |
+| Server: Datenbank, Probe-API, Weboberfläche, Docker-Compose | fertig, Ende zu Ende getestet |
+| Alarmierung, Berichte, Fernwartung (WireGuard) | geplant |
+
+Installation: [docs/INSTALLATION.md](docs/INSTALLATION.md)
 
 ## Tests
 
 ```bash
 python3 -m pytest -q
 ```
+
+Die Systemtests brauchen PostgreSQL (`NOTRUFMON_TEST_DSN`), sonst werden sie übersprungen.

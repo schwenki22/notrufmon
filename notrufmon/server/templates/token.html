@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{% if created %}Standort {{ sid }} angelegt{% else %}Neuer Token für {{ sid }}{% endif %}</h1>
+<div class="card"><p><b>Token der Probe</b> – wird nur jetzt angezeigt:</p><pre>{{ token }}</pre>
+<p>Installation auf dem Raspberry Pi:</p><pre>sudo ./install.sh --server {{ server }} --token {{ token }}</pre>
+{% if not created %}<p class="warn">Der alte Token ist ab sofort ungültig – auf der Probe <code>sudo ./install.sh --token …</code> mit dem neuen Token ausführen.</p>{% endif %}
+<p><a class="btn" href="/admin/sites/{{ sid }}">Weiter: Leitungen anlegen</a></p></div>
+{% endblock %}

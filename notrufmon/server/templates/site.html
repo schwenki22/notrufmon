@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ site.name }} <span class="muted">{{ site.id }}</span></h1>
+<div class="card actions">
+  {% if ov.online %}<span class="ok">Probe online</span>{% elif ov.health %}<span class="bad">Probe offline</span>{% else %}<span class="muted">Probe hat sich noch nie gemeldet</span>{% endif %}
+  <span class="muted">{{ ov.seen }}{% if ov.health %} · v{{ ov.health.version }} · {{ ov.health.remote_ip }}{% endif %}</span>
+  <form method="post" action="/admin/sites/{{ site.id }}/testcall"><button type="submit" class="secondary">Testdurchlauf jetzt</button></form>
+  <form method="post" action="/admin/sites/{{ site.id }}/token" onsubmit="return confirm('Neuen Token erzeugen? Der alte wird sofort ungültig.')"><button type="submit" class="secondary">Neuer Probe-Token</button></form>
+</div>
+
+<div class="card scroll"><h2>Leitungen</h2>
+{% if ov.lines %}<table><tr><th>Leitung</th><th>Netz</th><th>Rufnummer → Ziel</th><th>SIP</th><th>Letzter Test</th><th>24 h</th><th></th></tr>
+{% for x in ov.lines %}{% set l = x.l %}
+<tr><td><b>{{ l.label }}</b>{% if not l.enabled %} <span class="pill">inaktiv</span>{% endif %}<br><span class="muted">{{ 'Mobilfunk' if l.kind == 'mobile' else 'VoIP' }}</span></td>
+<td>{{ l.network }}</td><td>{{ l.cli }} → {{ l.target }}</td><td>{{ l.username }}@{{ l.sip_domain }}{% if not l.register %}<br><span class="muted">ohne REGISTER</span>{% endif %}</td>
+<td>{% if x.last %}<span class="{{ res_css(x.last.result) }}">{{ CLASSES[x.last.result] }}</span> <span class="muted">{{ x.last.time|lt }}</span>{% if x.last.reason %}<br><span class="muted">{{ x.last.reason }}</span>{% endif %}{% else %}<span class="muted">–</span>{% endif %}</td>
+<td>{% if x.av.pct is not none %}{{ x.av.pct }} %{% else %}–{% endif %}</td><td><a href="/admin/lines/{{ l.id }}">bearbeiten</a></td></tr>
+{% endfor %}</table>{% else %}<p class="muted">Noch keine Leitung.</p>{% endif %}
+</div>
+
+<details class="card"><summary><b>Leitung hinzufügen</b></summary>
+<form method="post" action="/admin/sites/{{ site.id }}/lines/new">{% include "line_fields.html" %}
+<p class="actions"><button type="submit">Leitung anlegen</button></p></form></details>
+
+<div class="card scroll"><h2>Letzte Testanrufe</h2>
+{% if tests %}<table><tr><th>Zeit</th><th>Leitung</th><th>Ergebnis</th><th>Grund</th><th>Rufnummer übermittelt</th><th>Ton ↑ / ↓</th></tr>
+{% for t in tests %}<tr><td>{{ t.time|lt('%d.%m. %H:%M:%S') }}</td><td>{{ t.line_label }}</td>
+<td><span class="{{ res_css(t.result) }}">{{ CLASSES[t.result] }}</span></td><td class="muted">{{ t.reason or '' }}</td>
+<td class="muted">{{ t.delivered_cli or '–' }}</td>
+<td>{{ {True: 'ja', False: 'nein', None: '–'}[t.audio_up] }} / {{ {True: 'ja', False: 'nein', None: '–'}[t.audio_down] }}</td></tr>{% endfor %}
+</table>{% else %}<p class="muted">Noch keine Tests.</p>{% endif %}
+</div>
+
+<h2>Einstellungen</h2>
+<form method="post" action="/admin/sites/{{ site.id }}"><div class="card"><div class="grid">
+  <div><label for="name">Name</label><input type="text" id="name" name="name" value="{{ site.name }}"></div>
+  <div><label for="region">Region</label><input type="text" id="region" name="region" value="{{ site.region }}"></div>
+  <div><label for="enabled">aktiv</label><select id="enabled" name="enabled"><option value="1" {% if site.enabled %}selected{% endif %}>ja</option><option value="0" {% if not site.enabled %}selected{% endif %}>nein</option></select></div>
+</div><p class="actions"><button type="submit">Speichern</button></p></div></form>
+<div class="card err"><h2>Standort löschen</h2><form method="post" action="/admin/sites/{{ site.id }}/delete">
+<p>Entfernt Standort, Leitungen und Probe-Zugang. Testergebnisse bleiben erhalten. Zur Bestätigung <code>{{ site.id }}</code> eintippen:</p>
+<div class="actions"><input type="text" name="confirm" style="max-width:240px"><button type="submit" class="danger">Endgültig löschen</button></div></form></div>
+{% endblock %}

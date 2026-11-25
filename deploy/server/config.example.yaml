@@ -1,0 +1,25 @@
+# notrufmon server configuration. Sites and lines are managed in the web UI.
+# Indentation: exactly 2 spaces per level.
+
+termination:
+  listen_port: 5060          # SIP trunk: the emergency call centre redirects the test numbers here
+  peer: 192.0.2.10           # SBC of the centre / carrier
+  allowed_sources:           # calls are only accepted from these addresses (IP or CIDR)
+    - 192.0.2.10
+  # local_ip: null           # null = from the routing table
+  # public_ip: null          # set if the server is behind 1:1 NAT (Contact + SDP)
+  rtp_port_min: 21000        # open for the peer addresses
+  rtp_port_max: 21999
+
+schedule:
+  interval_s: 900            # each line is tested every 15 min (start to start)
+  call_s: 15                 # length of a test call
+  gap_s: 30                  # pause between two lines of the same site
+  window_s: 90               # the redirected call must arrive within this time
+  grace_s: 120
+
+country_code: "352"
+
+web:
+  public_url: https://notruf.example.net
+  timezone: Europe/Luxembourg

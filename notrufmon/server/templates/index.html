@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Standorte</h1>
+<div class="card scroll">
+{% if not items %}<p>Noch keine Standorte. <a href="/admin/sites/new">Ersten Standort anlegen</a></p>{% else %}
+<table>
+<tr><th>Standort</th><th>Probe</th><th>Leitungen: letzter Test · Verfügbarkeit 24 h</th></tr>
+{% for it in items %}{% set s = it.site %}
+<tr>
+  <td><a href="/admin/sites/{{ s.id }}"><b>{{ s.name }}</b></a><br><span class="muted">{{ s.region or '' }} · {{ s.id }}</span>{% if not s.enabled %} <span class="pill">deaktiviert</span>{% endif %}</td>
+  <td>{% if it.online %}<span class="ok">online</span>{% elif it.health %}<span class="bad">offline</span>{% else %}<span class="muted">noch nie gemeldet</span>{% endif %}<br><span class="muted">{{ it.seen }}</span></td>
+  <td>{% for x in it.lines %}<div>{% if not x.l.enabled %}<span class="muted">{{ x.l.label }} (inaktiv)</span>{% else %}<b>{{ x.l.label }}</b> <span class="muted">{{ x.l.network }}</span> ·
+    {% if x.last %}<span class="{{ res_css(x.last.result) }}">{{ CLASSES[x.last.result] }}</span> <span class="muted">{{ x.last.time|lt('%H:%M') }}</span>{% else %}<span class="muted">noch kein Test</span>{% endif %}
+    · {% if x.av.pct is not none %}{{ x.av.pct }} % <span class="muted">({{ x.av.ok }}/{{ x.av.n }})</span>{% else %}<span class="muted">–</span>{% endif %}{% endif %}</div>
+  {% else %}<span class="bad">keine Leitung</span>{% endfor %}</td>
+</tr>
+{% endfor %}
+</table>{% endif %}
+</div>
+<p class="muted">Zeiten in Ortszeit ({{ tzname }}). „online“ = Lebenszeichen der Probe in den letzten 3 Minuten. Verfügbarkeit ohne „Probe gestört“.</p>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Leitung bearbeiten</h1>
+<p><a href="/admin/sites/{{ line.site_id }}">← zurück zum Standort</a></p>
+<form method="post" action="/admin/lines/{{ line.id }}"><div class="card">{% include "line_fields.html" %}</div>
+<div class="card actions"><button type="submit">Speichern</button></div></form>
+<form method="post" action="/admin/lines/{{ line.id }}/delete" onsubmit="return confirm('Leitung löschen?')" class="card"><button class="danger" type="submit">Leitung löschen</button></form>
+{% endblock %}
