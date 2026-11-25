@@ -14,7 +14,7 @@ Basis ist der SIP/RTP-Kern von voipmon (reine Python-Standardbibliothek).
 |---|---|
 | SIP-UA, RTP/RTCP (aus voipmon) | übernommen |
 | Tonprüfung, die Mobilfunk-Umkodierung übersteht (`notrufmon/tones.py`) | fertig, getestet |
-| Terminierung als SIP-Trunk, Zuordnung, Ergebnisklassen | in Arbeit |
+| Terminierung als SIP-Trunk, Zuordnung, Ergebnisklassen (`notrufmon/server/`) | fertig, lokal Ende zu Ende getestet |
 | Probe-Ablauf (SIP-Leitungen) | geplant |
 | Anbindung Yeastar TG200/TG400 | wenn Gerät verfügbar |
 | Datenbank, Weboberfläche, Alarmierung, Berichte | aus voipmon zu übernehmen |
